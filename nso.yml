@@ -1,0 +1,104 @@
+- hosts: 127.0.0.1
+  connection: local
+  vars:
+    nso_file: nso-6.5-freetrial.linux.x86_64
+    ios_ned: ncs-6.5-cisco-iosxr-7.69-freetrial
+    nso_dir: ~/NSO-6.5
+    run_dir: ~/ncsrun
+    files: NSO-6.5-free
+
+
+  tasks:
+  - name: make work dir
+    shell: mkdir ~/{{files}}/work
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: expand nso
+    shell: "chdir=~/{{files}}/work . && bash ../{{nso_file}}.signed.bin"
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: expand NED
+    shell: "chdir=~/{{files}}/work . && bash ../{{ios_ned}}.signed.bin"
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: install NSO
+    shell: "chdir=~/{{files}}/work . && bash {{nso_file | regex_replace('-freetrial', '') }}.installer.bin --local-install {{nso_dir}}"
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: make run dir
+    shell: mkdir {{run_dir}}
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: initialize
+    shell: . {{nso_dir}}/ncsrc && ncs-setup --dest {{run_dir}}
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: create NED symbolic link
+    shell: chdir={{run_dir}}/packages . && ln -s ~/{{files}}/work/{{ios_ned  | regex_replace('-freetrial', '') }}.tar.gz
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+#  - name: make clean
+#    shell: chdir=~/ncsrun/packages/cisco-ios/src . {{nso_dir}}/ncsrc && make clean
+#    register: output
+#  - debug: msg="{{output.stdout}}"
+#
+#  - name: make 
+#    shell: chdir=~/ncsrun/packages/cisco-ios/src . {{nso_dir}}/ncsrc && make 
+#    register: output
+#  - debug: msg="{{output.stdout}}"
+ 
+  - name: run NSO
+    shell: chdir={{run_dir}} . {{nso_dir}}/ncsrc && ncs
+    register: output
+  - debug: msg="{{output.stdout}}"
+  
+  - name: package reload
+    shell: |
+      . {{nso_dir}}/ncsrc && ncs_cli -C -u admin << EOF
+      packages reload
+      EOF
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: load device
+    shell: |
+      cd ~/{{files}}
+      . {{nso_dir}}/ncsrc && ncs_cli -C -u admin << EOF
+      confi t
+      load merge devices.xml
+      commit
+      exit
+      exit
+      EOF
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: fetch SSH key
+    shell: |
+      . {{nso_dir}}/ncsrc && ncs_cli -C -u admin << EOF
+      devices fetch-ssh-host-keys 
+      exit
+      EOF
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+  - name: Sync device
+    shell: |
+      . {{nso_dir}}/ncsrc && ncs_cli -C -u admin << EOF
+      devices sync-from
+      exit
+      EOF
+    register: output
+  - debug: msg="{{output.stdout}}"
+
+
+
+ 
+

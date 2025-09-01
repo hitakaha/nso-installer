@@ -1,0 +1,59 @@
+
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <authgroups>
+      <group>
+        <name>XR</name>
+        <umap>
+          <local-user>admin</local-user>
+          <remote-name>admin</remote-name>
+          <remote-password>$9$27K/uB7d4Dsj+c5zxK3+6EHmiTCHzEKuwBQgGXRisik=</remote-password>
+          <remote-secondary-password>$9$cuX8h3KcKltcI1aWE3gEpMisop3YP8Hh9JYtV2cDXl0=</remote-secondary-password>
+        </umap>
+      </group>
+    </authgroups>
+
+    <device>
+      <name>xr-1</name>
+      <address>172.30.0.2</address>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIKbhNTJy+eHMePqhdBfDac7nJxBl/6FxceWvvLkuuNTF</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>XR</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.69="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.69">cisco-iosxr-cli-7.69:cisco-iosxr-cli-7.69</ned-id>
+          <protocol>ssh</protocol>
+        </cli>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+
+    <device>
+      <name>xr-2</name>
+      <address>172.30.0.3</address>
+      <ssh>
+        <host-key>
+          <algorithm>ssh-ed25519</algorithm>
+          <key-data>AAAAC3NzaC1lZDI1NTE5AAAAIMH9MEjvL5N+r8tm4ggN9NXMFjUcBVwGMQtWDL+SFiOp</key-data>
+        </host-key>
+      </ssh>
+      <authgroup>XR</authgroup>
+      <device-type>
+        <cli>
+          <ned-id xmlns:cisco-iosxr-cli-7.69="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-7.69">cisco-iosxr-cli-7.69:cisco-iosxr-cli-7.69</ned-id>
+          <protocol>ssh</protocol>
+        </cli>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+
+  </devices>
+</config>
